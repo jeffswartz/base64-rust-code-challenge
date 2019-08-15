@@ -23,3 +23,5 @@ Then run the web app. In the web directory, run:
 npm run build
 npm start
 ```
+
+Then open the app in the browser: http://localhost:8080/.
