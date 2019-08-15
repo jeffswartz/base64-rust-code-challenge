@@ -1,6 +1,6 @@
 import * as wasm from "code-challenge";
 
-const SIZE = 10000000;
+const SIZE = 2000000;
 
 const logResults = (str) => {
   const resultsElem = document.getElementById('results');

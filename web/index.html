@@ -4,10 +4,28 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>Code Challenge</title>
+  <style>
+    #canvas1 {
+      margin-right: 8px;
+      border: solid 1px;
+    }
+    #final-image {
+      cursor: move;
+      position: absolute;
+      border: solid 1px;
+    }
+    #canvas2 {
+      display: none;
+    }
+    p {
+      width: 420px;
+      font-family: arial;
+    }
+  </style>
 </head>
 <body>
   <canvas id="canvas1" width="200" height="300"></canvas>
-  <canvas id="canvas2" width="200" height="300" style="display: none"></canvas>
+  <canvas id="canvas2" width="200" height="300"></canvas>
   <img id="final-image">
   <p>
     The image on the left is based on 4x8-byte RGBA values. These bytes
