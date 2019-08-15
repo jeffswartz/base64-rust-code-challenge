@@ -11,14 +11,15 @@ At the root, run:
 wasm-pack build
 ```
 
-cd to the www directory and run:
+Then, cd to the web directory and run:
 
 ```
 npm install
 ```
 
-Then run the web app. In the www directory, run:
+Then run the web app. In the web directory, run:
 
 ```
-npm run start
+npm run build
+npm start
 ```
