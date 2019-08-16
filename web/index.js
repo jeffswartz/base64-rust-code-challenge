@@ -1,6 +1,10 @@
 import * as wasm from "code-challenge";
 
-const SIZE = 2000000;
+const SIZE = 10000000;
+const canvas2 = document.getElementById('canvas2');
+const ctx2 = canvas2.getContext('2d');
+const canvas1 = document.getElementById('canvas1');
+const ctx1 = canvas1.getContext('2d');
 
 const logResults = (str) => {
   const resultsElem = document.getElementById('results');
@@ -115,8 +119,6 @@ const strToUint8Array = (str) => {
 };
 
 const uint8Array = getUint8Array();
-const canvas1 = document.getElementById('canvas1');
-var ctx1 = canvas1.getContext('2d');
 fillCanvas(uint8Array, ctx1);
 
 // Use the built-in btoa() function
@@ -127,29 +129,33 @@ for (let i = 0; i < uint8Array.byteLength; i++) {
 let start = new Date().getTime();
 const base64StrNative = btoa(binaryString);
 const durationNative = new Date().getTime() - start;
-logResults(`Duration using btoa(): ${durationNative}ms`);
-
-// using RUST:
-start = new Date().getTime();
-const base64Str = wasm.code_challenge(uint8Array);
-const durationRust = new Date().getTime() - start;
-let matchingResults = (base64Str === base64StrNative);
-logResults(`Duration using RUST WebAssembly: ${durationRust}ms`);
-logResults(`Results match: ${matchingResults}`);
+logResults(`Time to create base64 string using btoa(): ${durationNative}ms`);
 
 // Using Custom JS base64 implementation:
 start = new Date().getTime();
 const base64StrJS = binToBase64(uint8Array);
 const durationCustomJS = new Date().getTime() - start;
-logResults(`Time using custom implementation: ${durationCustomJS}ms`);
-matchingResults = (base64Str === base64StrJS);
+logResults(`Time to create base64 string using custom JavaScript implementation: ${durationCustomJS}ms`);
+let matchingResults = (base64StrJS === base64StrNative);
 logResults(`Results match: ${matchingResults}`);
 
-const resultUint8Str = atob(base64Str);
-const resultUint8Array = strToUint8Array(resultUint8Str);
-const canvas2 = document.getElementById('canvas2');
-var ctx2 = canvas2.getContext('2d');
+let resultUint8Str = atob(base64StrJS);
+let resultUint8Array = strToUint8Array(resultUint8Str);
 fillCanvas(resultUint8Array, ctx2);
-var img = document.getElementById('final-image'); 
+var img = document.getElementById('custom-js-image');
+img.src = canvas2.toDataURL();
+
+// using RUST:
+start = new Date().getTime();
+const base64Str = wasm.code_challenge(uint8Array);
+const durationRust = new Date().getTime() - start;
+matchingResults = (base64Str === base64StrNative);
+logResults(`Time to create base64 string using RUST WebAssembly: ${durationRust}ms`);
+logResults(`Results match: ${matchingResults}`);
+
+resultUint8Str = atob(base64Str);
+resultUint8Array = strToUint8Array(resultUint8Str);
+fillCanvas(resultUint8Array, ctx2);
+var img = document.getElementById('rust-image');
 img.src = canvas2.toDataURL();
 

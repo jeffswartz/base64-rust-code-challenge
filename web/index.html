@@ -9,30 +9,43 @@
       margin-right: 8px;
       border: solid 1px;
     }
-    #final-image {
+    img {
       cursor: move;
-      position: absolute;
       border: solid 1px;
     }
     #canvas2 {
       display: none;
     }
     p {
-      width: 420px;
+      width: 560px;
       font-family: arial;
     }
   </style>
 </head>
 <body>
+  <p>
+    This app compares the performance of creating a Base64 string for a
+    1MB of data (a JavaScript Uint8Array of 1,000,000 bytes).
+  </p>
   <canvas id="canvas1" width="200" height="300"></canvas>
   <canvas id="canvas2" width="200" height="300"></canvas>
-  <img id="final-image">
+  <img id="custom-js-image">
+  <img id="rust-image">
   <p>
-    The image on the left is based on 4x8-byte RGBA values. These bytes
-    are sent to the custom function that creates a Base64 string from the
-    bytes. This Base64 string is then converted back to bytes using the
-    built in btoa() function, and the right-hand image is constructed
-    using that.
+    The image on the left is based on the first 1200 and last 1200 bytes
+    from the source byte array (using 4x8-byte RGBA values).
+  </p>
+  <p>
+    These bytes are sent to the custom JavaScript function that creates
+    a Base64 string from the bytes. This Base64 string is then converted
+    back to bytes using the built-in <code>atob()</code> function,
+    and the center image is constructed using those bytes.
+  </p>
+  <p>
+    Then the bytes are sent to a WebAssembly Rust function that creates
+    a Base64 string from the bytes. This Base64 string is then converted
+    back to bytes using the built-in <code>atob()</code> function,
+    and the right-hand image is constructed using those bytes.
   </p>
   <p id="results"></p>
   <script src="./bootstrap.js"></script>
