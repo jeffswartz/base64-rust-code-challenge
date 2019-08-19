@@ -13,24 +13,18 @@ const logResults = (str) => {
 };
 
 const binToBase64 = (bytes) => {
+  const PADDING_CHAR_CODE = 61; // ASCII value for '='
   let index = 0;
   let bit = 0;
-  let resultStr = '';
-  let char;
+  let resultIndex = 0;
+  let resultUint8Array = new Uint8Array(4 * Math.ceil(SIZE / 3));
+  let charCode;
   let sextet;
 
-  const getCharForSextet = (sextet) => {
-    if (sextet < 26) {
-      return String.fromCharCode(65 + sextet); // A-Z
-    } else if (sextet < 52){
-      return String.fromCharCode(97 + sextet - 26); // a-z
-    } else if (sextet < 62){
-      return String.fromCharCode(48 + sextet - 52); // 0-9
-    } else if (sextet === 62) {
-      return '+'
-    } else {
-      return '/'
-    }
+  let base64CharCodeMap = [65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 43, 47]
+
+  const getCharCodeForSextet = (sextet) => {
+    return base64CharCodeMap[sextet]; // A-Z
   };
 
   while (index < bytes.byteLength - 1) {
@@ -56,26 +50,37 @@ const binToBase64 = (bytes) => {
         bit = 4;
         index++;
     }
-    char = getCharForSextet(sextet);
-    resultStr += char;
+    charCode = getCharCodeForSextet(sextet);
+    resultUint8Array[resultIndex] = charCode;
+    resultIndex++;
   }
 
   const finalByte = bytes[bytes.byteLength - 1];
 
   switch (bit) {
     case 0:
-      resultStr += getCharForSextet(finalByte >> 2)
-      resultStr += getCharForSextet((finalByte & 0b000011)  << 4)
-        + "==";
+      charCode = getCharCodeForSextet(finalByte >> 2)
+      resultUint8Array[resultIndex] = charCode;
+      resultIndex++;
+      charCode = getCharCodeForSextet((finalByte & 0b000011)  << 4);
+      resultUint8Array[resultIndex] = charCode;
+      resultIndex++;
+      resultUint8Array[resultIndex] = PADDING_CHAR_CODE;
+      resultIndex++;
+      resultUint8Array[resultIndex] = PADDING_CHAR_CODE;
       break;
     case 2:
-      resultStr += getCharForSextet(finalByte & 0b00111111);
+      charCode = getCharCodeForSextet(finalByte & 0b00111111);
+      resultUint8Array[resultIndex] = charCode;
       break;
     case 4:
-      resultStr += getCharForSextet((finalByte & 0b00001111) << 2)
-        + "=";
+      charCode = getCharCodeForSextet((finalByte & 0b00001111) << 2)
+      resultUint8Array[resultIndex] = charCode;
+      resultIndex++;
+      resultUint8Array[resultIndex] = PADDING_CHAR_CODE;
   }
-  return resultStr;
+  const utf8decoder = new TextDecoder();
+  return utf8decoder.decode(resultUint8Array);
 };
 
 const getUint8Array = () => {
