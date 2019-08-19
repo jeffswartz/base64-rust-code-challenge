@@ -3,6 +3,12 @@ A base64 encoder written in RUST
 
 Based on the RUST wasm Hello World: https://rustwasm.github.io/book/game-of-life/hello-world.html.
 
+## Prerequisites
+
+Install Rust: https://www.rust-lang.org/tools/install.
+
+And wasm-pack: https://rustwasm.github.io/wasm-pack/installer/.
+
 ## Building
 
 At the root, run:
