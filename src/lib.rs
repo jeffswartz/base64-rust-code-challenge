@@ -19,31 +19,13 @@ extern {
 }
 
 #[wasm_bindgen]
-pub fn greet(name: &str) {
-    alert(name);
-}
-
-#[wasm_bindgen]
 pub fn code_challenge(vec: Vec<u8>) -> String {
-    fn get_char_for_sextet(sextet: u8) -> char {
-      if sextet < 26 {
-        return (65 + sextet) as char; // A-Z
-      } else if sextet < 52 {
-        return (97 + sextet - 26) as char; // a-z
-      } else if sextet < 62 {
-        return (48 + sextet - 52) as char; // 0-9
-      } else if sextet == 62 {
-        return '+';
-      } else {
-        return '/';
-      }
-    }
-
     fn build_base64_string(v: &Vec<u8>) -> String {
-        let mut str = String::new();
+        let base64_char_code_map = [65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 43, 47];
+
+        let mut result_vector = Vec::with_capacity(1333336);
         let mut index = 0;
         let mut bit = 0;
-        let mut ch: char;
         let mut sextet: u8;
         while index < v.len() - 1  {
           match bit {
@@ -67,32 +49,29 @@ pub fn code_challenge(vec: Vec<u8>) -> String {
               index += 1;
             }
           }
-          ch = get_char_for_sextet(sextet);
-          str.push(ch);
+          result_vector.push(base64_char_code_map[sextet as usize]);
         }
 
         let final_byte: u8 = v[v.len() - 1];
 
         match bit {
             0 => {
-              ch = get_char_for_sextet(final_byte >> 2);
-              str.push(ch);
-              ch = get_char_for_sextet((final_byte & 0b000011) << 4);
-              str.push(ch);
-              str.push('=');
-              str.push('=');
+              result_vector.push(base64_char_code_map[(final_byte >> 2) as usize]);
+              result_vector.push(base64_char_code_map[((final_byte & 0b000011) << 4) as usize]);
+              result_vector.push(61);
+              result_vector.push(61);
             }
             2 => {
-              ch = get_char_for_sextet(final_byte & 0b00111111);
-              str.push(ch);
+              result_vector.push(base64_char_code_map[(final_byte & 0b00111111) as usize]);
             }
             _ => { // 4 is the only other possible value
-              ch = get_char_for_sextet((final_byte & 0b00001111) << 2);
-              str.push(ch);
-              str.push('=');
+              result_vector.push(base64_char_code_map[((final_byte & 0b00001111) << 2) as usize]);
+              result_vector.push(61);
             }
         }
-        return str;
+        return unsafe {
+          String::from_utf8_unchecked(result_vector)
+        };
     }
 
     // let mut timespec = time::get_time();
